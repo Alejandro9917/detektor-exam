@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  database:
+    container_name: database
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_DB: detektor
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - internal
+
+  api:
+    container_name: api
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - 5000:5000
+    expose:
+      - "5000"
+    networks:
+      - internal
+    depends_on:
+      - database
+
+volumes:
+  postgres_data:
+
+networks:
+  internal:
+    driver: bridge
