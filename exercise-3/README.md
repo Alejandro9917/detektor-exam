@@ -53,7 +53,7 @@ docker compose up
 
 ### Testing Post Route
 ```bash
-curl --location 'http://127.0.0.1:5000/v1/gps' \
+curl --location 'http://34.138.157.105:5000/v1/gps' \
 --header 'Content-Type: application/json' \
 --data '{
     "device_id": 1,
@@ -67,5 +67,10 @@ curl --location 'http://127.0.0.1:5000/v1/gps' \
 
 ### Testing GET Route
 ```bash
-curl --location 'http://127.0.0.1:5000/v1/getData'
+curl --location 'http://34.138.157.105:5000/v1/getData'
+```
+
+### Run Testing
+```bash
+python test.py
 ```
