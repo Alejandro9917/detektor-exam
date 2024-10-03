@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+import os
 import logging
 from datetime import datetime
 from utils.db import PostgresClient
@@ -6,6 +7,12 @@ from utils.json import makeResponse
 from gps.service import validations
 
 app = Flask(__name__)
+
+
+user = os.environ.get("DB_USER", "user")
+password = os.environ.get("DB_PASSWORD", "pass")
+name = os.environ.get("DB_NAME", "detektor")
+host = os.environ.get("DB_HOST", "database")
 
 
 @app.post("/v1/gps")
@@ -22,7 +29,9 @@ def createGPS():
     try:
         db_client = PostgresClient()
         if db_client.connection is None:
-            return makeResponse(False, "error", {"error": "Unable to connect to the database"}), 400
+            return makeResponse(
+                False, "error", {"error": "Unable to connect to the database"}
+            ), 400
         db_client.executeQuery(
             """INSERT INTO 
             records (device_id, longitude, latitude, altitude, speed, created_at) 
@@ -48,8 +57,12 @@ def getGPS():
     try:
         db_client = PostgresClient()
         if db_client.connection is None:
-            return makeResponse(False, "error", {"error": "Unable to connect to the database"}), 400
-        data = db_client.fetchQuery("""SELECT * FROM records""",)
+            return makeResponse(
+                False, "error", {"error": "Unable to connect to the database"}
+            ), 400
+        data = db_client.fetchQuery(
+            """SELECT * FROM records""",
+        )
         if data is None:
             return jsonify({"error": "Records could not be obtained"}), 500
         db_client.close()
@@ -59,4 +72,4 @@ def getGPS():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=3030)
